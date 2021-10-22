@@ -87,7 +87,7 @@ def main():
         model.to(device)
         print('Model running on', device)
 
-    trainloader, validloader, testloader, cat_to_name = model_functions.load_data(str(filepath))
+    trainloader, validloader, testloader, cat_to_name = model_functions.load_data(str(data_directory))
 
     # training loop using modularized train and validate functions
 
