@@ -1,0 +1,5 @@
+# Ignore stuff
+.DS_Store
+*.pth
+*.ipynb
+__pycache__/
