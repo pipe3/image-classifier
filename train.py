@@ -20,7 +20,7 @@ import numpy as np
 import time
 from datetime import datetime
 import argparse
-import workspace_utils
+from workspace_utils import active_session
 import model_functions, utility_functions
 import sys
 
@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--dropout', help='dropout', type=float, default=0.5)
     parser.add_argument('--lr_decay', help='Learning rate decay', default=0.1)
     parser.add_argument('--gpu', help='Use GPU instead of CPU',  action="store_true", default=False)
-    parser.add_argument('--filepath', help='path to store the trained model',)
+    parser.add_argument('--filepath', help='path to store the trained model', default='.')
     parser.add_argument('--print_every', help='print validation every number', type=int, default=20)
 
     args = parser.parse_args()
@@ -87,23 +87,23 @@ def main():
         model.to(device)
         print('Model running on', device)
 
-    trainloader, validloader, testloader, cat_to_name = model_functions.load_data(str(data_directory))
+    trainloader, validloader, testloader, class_to_idx = model_functions.load_data(str(data_directory))
 
-    # training loop using modularized train and validate functions
 
     # some vars not affecting the hyperparameters of the model
     t_losses, v_losses, t_accs, v_accs = [], [], [], []
 
-    with active_session():
+    #with active_session():
+    if True:
         starttime = time.time()
         print('Classifier training startup at', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         for e in range(epochs):
             print('Starting epoch {}/{}'.format(e+1, epochs), 'with learningrate', lr_scheduler.get_lr()[0])
             # train epoch
-            ttime, tloss, tacc = train(print_every)
+            ttime, tloss, tacc = model_functions.train(print_every, model, optimizer, criterion, device, trainloader, validloader)
             # validate epoch
-            vtime, vloss, vacc = validate()
+            vtime, vloss, vacc = model_functions.validate(model, criterion, device, validloader)
             # decrease lr
             lr_scheduler.step()
 
@@ -125,6 +125,8 @@ def main():
         print(f"Classifier training completed at "
               f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"in {elapsedtime:.0f} sec")
+
+        model_functions.save_model(filepath, arch, model, optimizer, lr_scheduler, epochs, learningrate, class_to_idx)
 
 if __name__ == '__main__':
     main()

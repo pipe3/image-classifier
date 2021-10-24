@@ -3,3 +3,5 @@
 *.pth
 *.ipynb
 __pycache__/
+pt
+pet_images/

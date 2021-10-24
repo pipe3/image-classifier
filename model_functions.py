@@ -13,6 +13,25 @@ import time
 from datetime import datetime
 import sys
 
+def save_model(filepath, arch, model, optimizer, lr_scheduler, epochs, learningrate, class_to_idx):
+
+    print('Saving model to', filepath+'/'+arch+'_'+'checkpoint.pth')
+    checkpoint = {'arch': arch,
+                  'classifier': model.classifier,
+                  'optimizer': optimizer,
+                  'lr_scheduler': lr_scheduler,
+                  'state_dict': model.state_dict(),
+                  'epochs': epochs,
+                  'learningrate': learningrate,
+                  'class_to_idx': class_to_idx
+                 }
+
+    try:
+        torch.save(checkpoint, filepath+'/'+checkpoint['arch']+'_'+'checkpoint.pth')
+        print('Model successfully saved')
+    except e:
+        print('An error occurred while saving the model: ', e)
+
 def load_predefined_model(arch):
     accepted_archs=['vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn']
     if arch in accepted_archs:
@@ -88,16 +107,19 @@ def load_data(data_dir='flowers'):
     validloader = torch.utils.data.DataLoader(valid_data, batch_size=64, shuffle=True)
     testloader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
 
-    # cat_to_name
-    with open('cat_to_name.json', 'r') as f:
-        cat_to_name = json.load(f)
 
-    return trainloader, validloader, testloader, cat_to_name
+    return trainloader, validloader, testloader, train_data.class_to_idx
+
+def get_cat_to_name(filename='cat_to_name.json'):
+    # cat_to_name
+    with open(filename, 'r') as f:
+        cat_to_name = json.load(f)
+    return cat_to_name
 
 #
 # Train
 #
-def train(validate_every=0):
+def train(validate_every, model, optimizer, criterion, device, trainloader, validloader):
     tloss = 0
     starttime = time.time()
     steps = 0
@@ -139,7 +161,7 @@ def train(validate_every=0):
 
         if validate_every != 0 and steps % validate_every == 0:
             #print('Validating batch {}/{}'.format(steps, len(trainloader)))
-            vtime, vloss, vacc = validate()
+            vtime, vloss, vacc = validate(model, criterion, device, validloader)
             print(f"Validating batch {steps}/{len(trainloader)}.. "
                   f"tloss {tloss/steps:.3f}.. "
                   f"tacc {tacc/steps:.3f}.. "
@@ -154,7 +176,7 @@ def train(validate_every=0):
 #
 # Validate
 #
-def validate():
+def validate(model, criterion, device, validloader):
     vloss = 0
     vacc = 0
     starttime = time.time()
