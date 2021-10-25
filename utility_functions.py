@@ -111,8 +111,8 @@ def predict(image_path, model, topk, device):
     image = torch.unsqueeze(image,0)
 
     # Move image and model to the correct device
-    image.to(device)
-    model.to(device)
+    #image.to(device)
+    #model.to(device)
 
     with torch.no_grad():
         model.eval()
