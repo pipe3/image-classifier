@@ -22,18 +22,17 @@ import time
 from datetime import datetime
 import sys
 
-def load_checkpoint(file, device):
+def load_checkpoint(file, gpu):
     '''
     Loads a model from a saved checkpoint. Moves it to the device (CPU or GPU).
 
     Returns the model along with other model parameters.
     '''
-    #if torch.cuda.is_available():
-    #    checkpoint = torch.load(file, map_location=lambda storage, loc: storage.cuda(0))
-    #else:
-    checkpoint = torch.load(file, map_location=lambda storage, loc: storage)
+    if gpu == True and torch.cuda.is_available():
+        checkpoint = torch.load(file, map_location=lambda storage, loc: storage.cuda(0))
+    else:
+        checkpoint = torch.load(file, map_location=lambda storage, loc: storage)
 
-    #model = models.checkpoint['arch']
     model = getattr(models, checkpoint['arch'])(pretrained=True)
 
     for param in model.parameters():
@@ -99,27 +98,6 @@ def imshow(image, ax=None, title=None):
     ax.imshow(image)
 
     return ax
-
-def get_category_names(filename, class_to_idx, l_list, p_list):
-    '''
-    Returns a list with category names.
-    '''
-    # cat_to_name
-    with open(filename, 'r') as f:
-        cat_to_name = json.load(f)
-
-    i = 0
-    class_list = []
-    for l in l_list:
-        #print('L:', l)
-        classification = list(class_to_idx)[l]
-        name = cat_to_name.get(str(classification))
-        prob = p_list[i]
-        print('Prob: {:.2f}% .. Class: {} .. Name: {}  '.format(prob*100, classification, name))
-        class_list.append(name)
-        i+=1
-
-    return class_list
 
 
 def predict(image_path, model, topk, device):

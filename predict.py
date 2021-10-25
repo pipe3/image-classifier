@@ -56,9 +56,9 @@ def main():
         print('Model running on', device)
 
     # Load checkpoint
-    model, optimizer, lr_scheduler, epochs = utility_functions.load_checkpoint(checkpoint, device)
+    model, optimizer, lr_scheduler, epochs = utility_functions.load_checkpoint(checkpoint, gpu)
     #print(model.classifier)
-    model.to(device)
+    #model.to(device)
 
     #utility_functions.imshow(utility_functions.process_image(image))
 
