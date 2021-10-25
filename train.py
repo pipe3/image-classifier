@@ -3,7 +3,7 @@
 #
 # PROGRAMMER: oliver@kuhles.net
 # DATE CREATED: 15/Oct/2021
-# REVISED DATE:             <=(Date Revised - if any)
+# REVISED DATE: 25/Oct/2021            <=(Date Revised - if any)
 # PURPOSE: Image classifier trainer
 
 # Imports

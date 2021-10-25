@@ -14,6 +14,10 @@ from datetime import datetime
 import sys
 
 def save_model(filepath, arch, model, optimizer, lr_scheduler, epochs, learningrate, class_to_idx):
+    '''
+    Save trained model as checkpoint to file. It takes all necessary parameters
+    to restore the model later on.
+    '''
 
     print('Saving model to', filepath+'/'+arch+'_'+'checkpoint.pth')
     checkpoint = {'arch': arch,
@@ -33,6 +37,11 @@ def save_model(filepath, arch, model, optimizer, lr_scheduler, epochs, learningr
         print('An error occurred while saving the model: ', e)
 
 def load_predefined_model(arch):
+    '''
+    Returns a model based on provided string. It checks if the model name is
+    valid (only VGG models allowed)
+    The program is terminated if the model is not in the accepted list.
+    '''
     accepted_archs=['vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn']
     if arch in accepted_archs:
         model = getattr(models, arch)(pretrained=True)
@@ -47,6 +56,13 @@ def load_predefined_model(arch):
     return model
 
 def replace_classifier(model, hidden_units, output_units, dropout):
+    '''
+    Takes a model and other parameters as input, then replaces the Classifier
+    and returns the updated model.
+    The hidden layer is fixed on 25088 input units due to VGG architecture.
+    Hidden layer output units and output units of the output layer can be
+    chosen.
+    '''
     simpleclassifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(25088, hidden_units)),
                           ('relu1', nn.ReLU()),
@@ -65,15 +81,13 @@ def load_data(data_dir='flowers'):
     three sub directories: /train, /valid and /test
     then tranforms them and loads them as datasets.
 
-    Loads the cat_to_name file from json into a dict
-
-    Returns the datasets and the cat_to_name
+    Returns the three datasets and the class_to_idx from train_data
     '''
     # data_dir = 'flowers'
     train_dir = data_dir + '/train'
     valid_dir = data_dir + '/valid'
     test_dir = data_dir + '/test'
-
+    # Std deviation and mean according to the dataset
     std = [0.229, 0.224, 0.225]
     mean = [0.485, 0.456, 0.406]
 
@@ -107,19 +121,25 @@ def load_data(data_dir='flowers'):
     validloader = torch.utils.data.DataLoader(valid_data, batch_size=64, shuffle=True)
     testloader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
 
-
     return trainloader, validloader, testloader, train_data.class_to_idx
 
+
 def get_cat_to_name(filename='cat_to_name.json'):
+    '''
+    Returns a dict with categories to names.
+    '''
     # cat_to_name
     with open(filename, 'r') as f:
         cat_to_name = json.load(f)
     return cat_to_name
 
-#
-# Train
-#
+
 def train(validate_every, model, optimizer, criterion, device, trainloader, validloader):
+    '''
+    The training loop performs all steps necessary to train the model.
+
+    Returns total time, total loss and total accuracy.
+    '''
     tloss = 0
     starttime = time.time()
     steps = 0
@@ -173,10 +193,13 @@ def train(validate_every, model, optimizer, criterion, device, trainloader, vali
 
     return elapsedtime, tloss/len(trainloader), tacc/len(trainloader)
 
-#
-# Validate
-#
+
 def validate(model, criterion, device, validloader):
+    '''
+    Validation loop to check the trained model for accuracy and loss.
+
+    Returns total time, total loss and total accuracy
+    '''
     vloss = 0
     vacc = 0
     starttime = time.time()
