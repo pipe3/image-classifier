@@ -57,7 +57,8 @@ def main():
 
     # Load checkpoint
     model, optimizer, lr_scheduler, epochs = utility_functions.load_checkpoint(checkpoint, device)
-    print(model.classifier)
+    #print(model.classifier)
+    model.to(device)
 
     #utility_functions.imshow(utility_functions.process_image(image))
 
@@ -67,13 +68,28 @@ def main():
     p_list = probs.squeeze().tolist()
     l_list = labels.squeeze().tolist()
 
-    print(model.class_to_idx)
-    class_list = utility_functions.get_category_names(catfile, model.class_to_idx, l_list, p_list)
+    #print(model.class_to_idx)
+    #class_list = utility_functions.get_category_names(catfile, model.class_to_idx, l_list, p_list)
 
-    plt.figure()
-    plt.barh(class_list, p_list)
-    plt.title('Probability Prediction')
-    plt.show()
+    #plt.figure()
+    #plt.barh(class_list, p_list)
+    #plt.title('Probability Prediction')
+    #plt.show()
+
+    # cat_to_name
+    with open(catfile, 'r') as f:
+        cat_to_name = json.load(f)
+
+    i = 0
+    #class_list = []
+    for l in l_list:
+        #print('L:', l)
+        classification = list(model.class_to_idx)[l]
+        name = cat_to_name.get(str(classification))
+        prob = p_list[i]
+        print('Prob: {:.2f}% .. Class: {} .. Name: {}  '.format(prob*100, classification, name))
+        #class_list.append(name)
+        i+=1
 
 
 

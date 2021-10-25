@@ -28,12 +28,10 @@ def load_checkpoint(file, device):
 
     Returns the model along with other model parameters.
     '''
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print('Loading checkpoint into', device)
-    if torch.cuda.is_available():
-        checkpoint = torch.load(file, map_location=lambda storage, loc: storage.cuda(0))
-    else:
-        checkpoint = torch.load(file, map_location=lambda storage, loc: storage)
+    #if torch.cuda.is_available():
+    #    checkpoint = torch.load(file, map_location=lambda storage, loc: storage.cuda(0))
+    #else:
+    checkpoint = torch.load(file, map_location=lambda storage, loc: storage)
 
     #model = models.checkpoint['arch']
     model = getattr(models, checkpoint['arch'])(pretrained=True)
@@ -113,10 +111,11 @@ def get_category_names(filename, class_to_idx, l_list, p_list):
     i = 0
     class_list = []
     for l in l_list:
-        print('L:', l)
+        #print('L:', l)
         classification = list(class_to_idx)[l]
         name = cat_to_name.get(str(classification))
-        #prob = p_list[i]
+        prob = p_list[i]
+        print('Prob: {:.2f}% .. Class: {} .. Name: {}  '.format(prob*100, classification, name))
         class_list.append(name)
         i+=1
 
