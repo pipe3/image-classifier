@@ -1,4 +1,11 @@
-# functions and classes related to the model
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# PROGRAMMER: oliver@kuhles.net
+# DATE CREATED: 15/Oct/2021
+# REVISED DATE: 25/Oct/2021            <=(Date Revised - if any)
+# PURPOSE: functions and classes related to the model
+#
 import matplotlib.pyplot as plt
 import torch
 from torch import nn, optim
@@ -35,6 +42,7 @@ def save_model(filepath, arch, model, optimizer, lr_scheduler, epochs, learningr
         print('Model successfully saved')
     except e:
         print('An error occurred while saving the model: ', e)
+
 
 def load_predefined_model(arch):
     '''
@@ -87,7 +95,7 @@ def load_data(data_dir='flowers'):
     train_dir = data_dir + '/train'
     valid_dir = data_dir + '/valid'
     test_dir = data_dir + '/test'
-    # Std deviation and mean according to the dataset
+    # Std deviation and mean according to the ImageNet dataset
     std = [0.229, 0.224, 0.225]
     mean = [0.485, 0.456, 0.406]
 
