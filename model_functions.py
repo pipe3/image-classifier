@@ -132,16 +132,6 @@ def load_data(data_dir='flowers'):
     return trainloader, validloader, testloader, train_data.class_to_idx
 
 
-def get_cat_to_name(filename='cat_to_name.json'):
-    '''
-    Returns a dict with categories to names.
-    '''
-    # cat_to_name
-    with open(filename, 'r') as f:
-        cat_to_name = json.load(f)
-    return cat_to_name
-
-
 def train(validate_every, model, optimizer, criterion, device, trainloader, validloader):
     '''
     The training loop performs all steps necessary to train the model.
