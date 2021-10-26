@@ -62,8 +62,8 @@ def main():
     #print('Standard classifier')
     #print(model.classifier)
     model = model_functions.replace_classifier(model, hidden_units, output_units, dropout)
-    print('Replaced classifier')
-    print(model.classifier)
+    #print('Replaced classifier')
+    #print(model.classifier)
 
     # lets define the criterion and optimizer
     criterion = nn.NLLLoss()
