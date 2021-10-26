@@ -76,21 +76,23 @@ def main():
     #plt.title('Probability Prediction')
     #plt.show()
 
-    # cat_to_name
-    with open(catfile, 'r') as f:
-        cat_to_name = json.load(f)
-
     i = 0
-    #class_list = []
-    for l in l_list:
-        #print('L:', l)
-        classification = list(model.class_to_idx)[l]
-        name = cat_to_name.get(str(classification))
-        prob = p_list[i]
-        print('Prob: {:.2f}% .. Class: {} .. Name: {}  '.format(prob*100, classification, name))
-        #class_list.append(name)
-        i+=1
 
+    if catfile != None:
+        with open(catfile, 'r') as f:
+            cat_to_name = json.load(f)
+        for l in l_list:
+            classification = list(model.class_to_idx)[l]
+            name = cat_to_name.get(str(classification))
+            prob = p_list[i]
+            print('Prob: {:.2f}% .. Class: {} .. Name: {}  '.format(prob*100, classification, name))
+            i+=1
+    else:
+        for l in l_list:
+            classification = list(model.class_to_idx)[l]
+            prob = p_list[i]
+            print('Prob: {:.2f}% .. Class: {} '.format(prob*100, classification))
+            i+=1
 
 
 if __name__ == '__main__':
